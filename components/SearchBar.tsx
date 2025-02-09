@@ -6,7 +6,7 @@ interface SearchBarProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCrossClick?: () => void;
-  className?: string; // Add className prop
+  className?: string;
 }
 
 const SearchBar = ({ value, onChange, handleCrossClick, className }: SearchBarProps) => {
@@ -18,22 +18,21 @@ const SearchBar = ({ value, onChange, handleCrossClick, className }: SearchBarPr
   };
 
   return (
-    <div className={`search  ${className}`}> {/* Apply className here */}
-      <button className="">
-        {value && value?.length > 0 ? (
-          <button
-            type="button"
-            onClick={() => {
-              if (handleCrossClick) handleCrossClick();
-              handleFocus();
-            }}
-          >
-            <CloseSmallIcon className="w-4" />
-          </button>
-        ) : (
-          <SearchIcon2 />
-        )}
-      </button>
+    <div className={`search  ${className}`}>
+      {value && value.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => {
+            if (handleCrossClick) handleCrossClick();
+            handleFocus();
+          }}
+        >
+          <CloseSmallIcon className="w-4" />
+        </button>
+      ) : (
+        <SearchIcon2 />
+      )}
+
       <input
         ref={inputRef}
         id="search"

@@ -14,6 +14,7 @@ const ListView = ({ setPatientData }) => {
   const [grid, setGrid] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -35,6 +36,10 @@ const ListView = ({ setPatientData }) => {
     }
   }, [isMobile]);
 
+  const filteredData = data.filter((event) =>
+    event.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <div
@@ -46,12 +51,8 @@ const ListView = ({ setPatientData }) => {
             <div className="flex items-center justify-end gap-2">
               <div className="w-full">
                 <SearchBar
-                  value={""}
-                  onChange={function (
-                    e: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-72"
                 />
               </div>
@@ -79,7 +80,7 @@ const ListView = ({ setPatientData }) => {
         {!grid && (
           <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 items-center">
-              {data.map((event, index) => (
+              {filteredData.map((event, index) => (
                 <div
                   key={index}
                   className="bg-white w-full max-w-sm mx-auto rounded-xl shadow-md overflow-hidden flex flex-col h-full"
@@ -126,7 +127,7 @@ const ListView = ({ setPatientData }) => {
         {grid && isMobile && (
           <div className="flex-1 overflow-y-auto">
             <div className="flex flex-col gap-4 items-center">
-              {data.map((event, index) => (
+              {filteredData.map((event, index) => (
                 <div
                   key={index}
                   className="bg-white w-full max-w-sm mx-auto rounded-xl shadow-md overflow-hidden flex flex-col h-full"
