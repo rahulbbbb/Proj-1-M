@@ -21,12 +21,12 @@ const validationSchema = Yup.object().shape({
     ),
 });
 
-interface PatientData {
-  patientId: string;
-  doctorName?: string;
-  sessionTime?: string;
-  sessionDate?: string;
-}
+// interface PatientData {
+//   patientId: string;
+//   doctorName?: string;
+//   sessionTime?: string;
+//   sessionDate?: string;
+// }
 
 export default function ScheduledSession({
   hideModal,
@@ -38,6 +38,15 @@ export default function ScheduledSession({
   const [modal, setModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showTimeSlots, setShowTimeSlots] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowTimeSlots(false);
+      setIsClosing(false);
+    }, 300);
+  };
 
   const communityOptions = [
     {
@@ -75,8 +84,8 @@ export default function ScheduledSession({
     onSubmit: (values) => {
       const payload = {
         doctorId: doctorData?.id,
-        patientId: patientData.patientId,
-        name: patientData.name,
+        patientId: patientData[0].patientId,
+        name: patientData[0].name,
         sessionType: values.sessionType,
         sessionMode: values.sessionMode,
         sessionTime: values.sessionTime,
@@ -89,34 +98,34 @@ export default function ScheduledSession({
       try {
         const existingData =
           JSON.parse(localStorage.getItem("scheduledData")) || [];
-        existingData.unshift(payload);
-        localStorage.setItem("scheduledData", JSON.stringify(existingData));
+        // existingData.unshift(payload);
+        localStorage.setItem("scheduledData", JSON.stringify(payload));
 
-        const patientDataa =
-          JSON.parse(localStorage.getItem("patientData")) || [];
-        const updatedPatientData = patientDataa.map((patient) => {
-          if (patient.patientId === patientData.patientId) {
-            return {
-              ...patient,
-              doctorName: doctorData.title,
-              sessionTime: values.sessionTime,
-              sessionDate: values.sessionDate,
-              sessionFee: doctorData.sessionFee,
-              sessionMode: values.sessionMode,
-              link:values.link,
-              status: "Scheduled",
-            };
-          }
-          return patient;
-        });
+        // const patientDataa =
+        //   JSON.parse(localStorage.getItem("patientData")) || [];
+        // const updatedPatientData = patientDataa.map((patient) => {
+        //   if (patient.patientId === patientData[0].patientId) {
+        //     return {
+        //       ...patient,
+        //       doctorName: doctorData.title,
+        //       sessionTime: values.sessionTime,
+        //       sessionDate: values.sessionDate,
+        //       sessionFee: doctorData.sessionFee,
+        //       sessionMode: values.sessionMode,
+        //       link: values.link,
+        //       status: "Scheduled",
+        //     };
+        //   }
+        //   return patient;
+        // });
 
-        localStorage.setItem("patientData", JSON.stringify(updatedPatientData));
+        // localStorage.setItem("patientData", JSON.stringify(updatedPatientData));
 
-        setPatientData(updatedPatientData);
+        // setPatientData(updatedPatientData);
 
         setModal(true);
 
-        window.dispatchEvent(new Event("storageUpdate"));
+        // window.dispatchEvent(new Event("storageUpdate"));
 
         setTimeout(() => {
           formik.resetForm();
@@ -222,15 +231,15 @@ export default function ScheduledSession({
                       <div className="flex bg-gray-50 gap-6 p-2 rounded-lg">
                         <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300">
                           <span className="text-white font-bold text-lg">
-                            {patientData.name
-                              ? patientData.name[0].toUpperCase()
+                            {patientData[0].name
+                              ? patientData[0].name[0].toUpperCase()
                               : ""}
                           </span>
                         </div>
                         <div className="flex flex-col">
-                          <div>{patientData.name}</div>
+                          <div>{patientData[0].name}</div>
                           <div className="text-xs">
-                            {`+91${patientData.mobileNumber}`}
+                            {`+91${patientData[0].mobileNumber}`}
                           </div>
                         </div>
                       </div>
@@ -412,25 +421,33 @@ export default function ScheduledSession({
 
                   {showTimeSlots && (
                     <>
+                      {/* Overlay */}
                       <div
                         className="fixed inset-0 bg-black bg-opacity-50 z-50"
-                        onClick={() => setShowTimeSlots(false)}
+                        onClick={handleCloseModal}
                       ></div>
 
-                      <div className="fixed bottom-0 left-0 w-full bg-white rounded-t-lg shadow-lg z-50 transform transition-transform duration-300 ease-in-out">
-                        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                      {/* Modal */}
+                      <div
+                        className={`fixed bottom-0 left-0 w-full bg-gradient-to-b from-lightBGPink to-darkPink  rounded-t-lg shadow-lg z-50 ${
+                          !isClosing ? "slideUp" : "slideDown"
+                        }`}
+                      >
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-4 ">
                           <h2 className="text-lg font-semibold text-gray-700 mx-auto">
                             Session Time
                           </h2>
                           <button
-                            onClick={() => setShowTimeSlots(false)}
+                            onClick={handleCloseModal}
                             className="text-gray-500 hover:text-gray-700"
                           >
                             <CloseNewIcon />
                           </button>
                         </div>
 
-                        <div className="p-4 space-y-4">
+                        {/* Modal Content */}
+                        <div className="p-4 space-y-4 ">
                           {[
                             {
                               label: "Morning",
@@ -469,7 +486,7 @@ export default function ScheduledSession({
                               ],
                             },
                           ].map(({ label, times }) => (
-                            <div key={label}>
+                            <div key={label} className="border bg-white p-4 rounded-lg">
                               <h3 className="text-lg font-semibold text-gray-700 mb-2">
                                 {label}
                               </h3>
@@ -494,9 +511,7 @@ export default function ScheduledSession({
                                       className={`border rounded-md p-2 ${
                                         isDisabled
                                           ? "border-gray-300 text-gray-400 cursor-not-allowed opacity-50"
-                                          : formik.values.sessionTime === time
-                                          ? "border-red-500 text-red-600"
-                                          : "border-gray-300 text-gray-700"
+                                          :  "text-pink-500 border-pink-500 hover:bg-pink-500"
                                       }`}
                                     >
                                       {time}

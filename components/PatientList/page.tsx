@@ -184,9 +184,9 @@ const PatientList = () => {
       <div className="relative">
         {scheduled ? (
           <DRCard
-            setScheduled={setScheduled}
+            // setScheduled={setScheduled}
             data={rowData}
-            setPatientData={setPatientData}
+            // setPatientData={setPatientData}
           />
         ) : (
           <Table

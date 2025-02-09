@@ -1,25 +1,24 @@
 import React, { useRef } from "react";
-import {  CloseSmallIcon } from "@/components/Icons";
-import { SearchIcon2 } from "@/components/Icons"
+import { CloseSmallIcon } from "@/components/Icons";
+import { SearchIcon2 } from "@/components/Icons";
 
 interface SearchBarProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCrossClick?: () => void;
+  className?: string; // Add className prop
 }
 
-const SearchBar = ({ value, onChange, handleCrossClick }: SearchBarProps) => {
-  //reference for input field
+const SearchBar = ({ value, onChange, handleCrossClick, className }: SearchBarProps) => {
   const inputRef = useRef(null);
 
-  //to clear the input field and set focus
   const handleFocus = () => {
     inputRef.current.value = "";
     inputRef.current.focus();
   };
 
   return (
-    <div className="search w-auto">
+    <div className={`search  ${className}`}> {/* Apply className here */}
       <button className="">
         {value && value?.length > 0 ? (
           <button
@@ -28,8 +27,6 @@ const SearchBar = ({ value, onChange, handleCrossClick }: SearchBarProps) => {
               if (handleCrossClick) handleCrossClick();
               handleFocus();
             }}
-            
-            
           >
             <CloseSmallIcon className="w-4" />
           </button>
@@ -42,15 +39,12 @@ const SearchBar = ({ value, onChange, handleCrossClick }: SearchBarProps) => {
         id="search"
         type="text"
         className="border-none shadow-none focus:outline-none search-input focus:shadow-none ring-0 focus:ring-0 font-normal pr-3"
-        placeholder="Search..."
-        // value={value}
-        // value={value}
+        placeholder="Search Psychologists..."
+        value={value}
         onChange={onChange}
       />
-      
     </div>
   );
 };
 
 export default SearchBar;
-
